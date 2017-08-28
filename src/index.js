@@ -25,7 +25,8 @@ co(function *() {
   let provider = require(`./providers/${config.provider}`);
 
   let args = parseArgs(provider.name);
-  let samlAssertion = yield provider.login(config.idpEntryUrl, args.username, args.password);
+  let samlAssertion = yield provider.login(config.accounts[args.account], args.username, args.password);
+  //let samlAssertion = yield provider.login(config.idpEntryUrl, args.username, args.password);
   let role = yield selectRole(samlAssertion, args.role);
   let token = yield getToken(samlAssertion, args.account, role);
   let profileName = buildProfileName(role, args.account, args.profile);
@@ -176,28 +177,30 @@ function *getToken(samlAssertion, account, role) {
     }, function (err, token) {
       if (err) { return reject(err); }
 
-      if (account === config.defaultAccount) {
-        spinner.stop();
-        return resolve(token);
-      }
+      spinner.stop();
+	  return resolve(token);
+      //if (account === config.defaultAccount) {
+      //  spinner.stop();
+      //  return resolve(token);
+      //}
 
-      sts.config.credentials = new AWS.Credentials(
-        token.Credentials.AccessKeyId,
-        token.Credentials.SecretAccessKey,
-        token.Credentials.SessionToken);
-      let roleArn = role.roleArn.replace(/::(\d+)/, `::${config.accounts[account]}`);
+      //sts.config.credentials = new AWS.Credentials(
+      //  token.Credentials.AccessKeyId,
+      //  token.Credentials.SecretAccessKey,
+      //  token.Credentials.SessionToken);
+      //let roleArn = role.roleArn.replace(/::(\d+)/, `::${config.accounts[account]}`);
 
-      // Need to switch roles to the other account
-      const splitArn = token.AssumedRoleUser.Arn.split('/');
-      sts.assumeRole({
-        RoleArn: roleArn,
-        RoleSessionName: splitArn[splitArn.length - 1]
-      }, function (err, assumedToken) {
-        if (err) { return reject(err); }
+      //// Need to switch roles to the other account
+      //const splitArn = token.AssumedRoleUser.Arn.split('/');
+      //sts.assumeRole({
+      //  RoleArn: roleArn,
+      //  RoleSessionName: splitArn[splitArn.length - 1]
+      //}, function (err, assumedToken) {
+      //  if (err) { return reject(err); }
 
-        spinner.stop();
-        return resolve(assumedToken);
-      });
+      //  spinner.stop();
+      //  return resolve(assumedToken);
+      //});
     });
   });
 }
