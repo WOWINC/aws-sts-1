@@ -3,10 +3,9 @@
   "outputFormat": "json",
   "region": "us-east-1",
   "provider": "okta",
-  "idpEntryUrl": "https://xxx.okta.com/home/amazon_aws/xxx",
   "accounts": {
-    "staging": "aws-account-id",
-    "production": "aws-account-id"
+    "staging": "https://wow.okta.com/home/amazon_aws/[idp url string for staging account]",
+    "production": "https://wow.okta.com/home/amazon_aws/[idp url string for production account]"
   },
   "defaultAccount": "staging"
 }

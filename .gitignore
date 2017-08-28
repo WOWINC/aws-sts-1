@@ -1,4 +1,5 @@
 .DS_Store
 .debug
 node_modules
-aws-token.sh
+*.sw[op]
+npm-debug.log
