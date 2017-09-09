@@ -15,6 +15,9 @@ It supports assuming an AWS role and will automatically update your AWS CLI cred
 Configuration is done by creating a config.json file in the cfg directory. An [example template](./cfg/config.example.json) is provided.
 
 ```
+NOTE: For awsConfigPath, you should not use a platform specific path prefix, like '~' or '%USERPROFILE%', the script will join with the OS home directory.```
+
+```
 awsConfigPath:    Path to the user AWS CLI credential file. The recommended path is the path to the Docker container's credential path.
 outputFormat:     Output format of AWS access token credentials
 region:           Region used for AWS API calls
@@ -56,6 +59,7 @@ Optional arguments:
 `````
 
 ### Windows Powershell
+
 `````
 PS> .\aws-token.ps1 --help
 usage: index.js [-h] [-v] [--username USERNAME] [--password PASSWORD]
@@ -77,6 +81,7 @@ Optional arguments:
                         as. Defaults to the name of the account and role specified.
 `````
 ### Windows Batch File
+
 `````
 C:\> aws-token.cmd --help
 usage: index.js [-h] [-v] [--username USERNAME] [--password PASSWORD]
