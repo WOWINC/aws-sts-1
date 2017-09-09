@@ -20,38 +20,40 @@ require('colors');
 const config = require('../cfg/config');
 const arnRegExp = /^arn:aws:iam::(\d+):([^\/]+)\/(.+)$/;
 
-co(function*() {
-    console.log('Earnest AWS Token Generator\n'.green.bold);
-    let provider = require(`./providers/${config.provider}`);
 
-    let args = parseArgs(provider.name);
-    let samlAssertion = yield provider.login(config.accounts[args.account], args.username, args.password);
+co(function* () {
+  console.log('Earnest AWS Token Generator\n'.green.bold);
+  let provider = require(`./providers/${config.provider}`);
 
-    let role = yield selectRole(samlAssertion, args.role);
-    let token = yield getToken(samlAssertion, args.account, role);
-    let profileName = buildProfileName(role, args.account, args.profile);
-    yield writeTokenToConfig(token, profileName);
+  let args = parseArgs(provider.name);
+  let samlAssertion = yield provider.login(config.accounts[args.account], args.username,
+    args.password);
 
-    console.log('\n\n----------------------------------------------------------------');
-    console.log('Your new access key pair has been stored in the AWS configuration file ' +
-      '~%s'.green.bold + ' under the ' + '%s'.green.bold +
-      ' profile.', config.awsConfigPath, profileName);
-    console.log('Note that it will expire at ' + '%s'.yellow.bold + '.',
-      token.Credentials.Expiration);
-    console.log('After this time, you may safely rerun this script to refresh your access key pair.');
-    console.log('To use this credential, call the AWS CLI with the --profile option (e.g. ' +
-      'aws --profile %s ec2 describe-instances'.italic.grey + ').', profileName);
-    console.log('----------------------------------------------------------------\n\n');
-  })
-  .catch(function(err) {
-    if (err instanceof Error) {
-      console.error(err.message);
-      console.error(err.stack);
-    } else {
-      console.error(err);
-    }
-    process.exit(-1);
-  });
+  let role = yield selectRole(samlAssertion, args.role);
+  let token = yield getToken(samlAssertion, args.account, role);
+  let profileName = buildProfileName(role, args.account, args.profile);
+  yield writeTokenToConfig(token, profileName);
+
+  console.log('\n\n----------------------------------------------------------------');
+  console.log('Your new access key pair has been stored in the AWS configuration file ' +
+    '~%s'.green.bold + ' under the ' + '%s'.green.bold +
+    ' profile.', config.awsConfigPath, profileName);
+  console.log('Note that it will expire at ' + '%s'.yellow.bold + '.',
+    token.Credentials.Expiration);
+  console.log('After this time, you may safely rerun this script to refresh your access key ' +
+    'pair.');
+  console.log('To use this credential, call the AWS CLI with the --profile option (e.g. ' +
+    'aws --profile %s ec2 describe-instances'.italic.grey + ').', profileName);
+  console.log('----------------------------------------------------------------\n\n');
+}).catch(function (err) {
+  if (err instanceof Error) {
+    console.error(err.message);
+    console.error(err.stack);
+  } else {
+    console.error(err);
+  }
+  process.exit(-1);
+});
 
 
 function parseArgs(providerName) {
@@ -94,7 +96,7 @@ function* selectRole(samlAssertion, roleName) {
   let attributes = saml.Response.Assertion[0].AttributeStatement[0].Attribute;
   for (let attribute of attributes) {
     if (attribute.$.Name.value === 'https://aws.amazon.com/SAML/Attributes/Role') {
-      roles = attribute.AttributeValue.map(function(role) {
+      roles = attribute.AttributeValue.map(function (role) {
         return parseRoleAttributeValue(role._);
       });
     }
@@ -105,7 +107,7 @@ function* selectRole(samlAssertion, roleName) {
   }
 
   let accountIds = [];
-  roles.forEach(function(role) {
+  roles.forEach(function (role) {
     if (accountIds.indexOf(role.accountId) === -1) {
       accountIds.push(role.accountId);
     }
@@ -141,7 +143,7 @@ function* selectRole(samlAssertion, roleName) {
 }
 
 function parseRoleAttributeValue(attributeValue) {
-  let arns = attributeValue.split(',').map(function(arn) {
+  let arns = attributeValue.split(',').map(function (arn) {
     let match = arnRegExp.exec(arn);
     if (!match) {
       throw new Error('Unable to parse role ARN: ' + arn);
@@ -169,7 +171,7 @@ function parseRoleAttributeValue(attributeValue) {
 function* getToken(samlAssertion, account, role) {
   let spinner = new clui.Spinner('Getting token...');
 
-  return new Promise(function(resolve, reject) {
+  return new Promise(function (resolve, reject) {
     spinner.start();
     let sts = new AWS.STS({
       region: config.region
@@ -178,7 +180,7 @@ function* getToken(samlAssertion, account, role) {
       PrincipalArn: role.principalArn,
       RoleArn: role.roleArn,
       SAMLAssertion: samlAssertion
-    }, function(err, token) {
+    }, function (err, token) {
       if (err) {
         return reject(err);
       }
