@@ -1,7 +1,6 @@
 # AWS STS Token Generator
 
- ### This is a fork of https://github.com/meetearnest/aws-sts.  It has been modified to work with our account setup, which requires a different
- app url for each account.
+ ### This is a fork of https://github.com/meetearnest/aws-sts.  It has been modified to work with our account setup, which requires a different app url for each account.
 
 Single Sign on within AWS removes the ability to generate long-lived access tokens for AWS. Instead, the
 [Amazon Security Token Service](http://docs.aws.amazon.com/STS/latest/APIReference/Welcome.html) is used to generate
@@ -14,8 +13,8 @@ It supports assuming an AWS role and will automatically update your AWS CLI cred
 
 Configuration is done by creating a config.json file in the cfg directory. An [example template](./cfg/config.example.json) is provided.
 
-```
-NOTE: For awsConfigPath, you should not use a platform specific path prefix, like '~' or '%USERPROFILE%', the script will join with the OS home directory.```
+NOTE: For awsConfigPath, you should not use a platform specific path prefix, like '~' or '%USERPROFILE%', the script will join with the OS home directory.
+
 
 ```
 awsConfigPath:    Path to the user AWS CLI credential file. The recommended path is the path to the Docker container's credential path.
@@ -30,14 +29,14 @@ accounts:         Hash of name/idPEntryUrl pairs for accounts which can be switc
 
 To install:
 1. Clone this Repo
-2. install the dependencies: ```npm instal```
+2. install the dependencies: `npm instal`
 3. run the [`aws-token.sh`](./aws-token.sh) script at the root of your repository. use the --account switch to selecgt an account to log in to.
-``` ./aws-token.sh --account account-name ```
+` ./aws-token.sh --account account-name `
 
 ## Usage
 
 ### Bash (MacOs/Linux)
-`````
+```
 $> ./aws-token.sh --help
 usage: index.js [-h] [-v] [--username USERNAME] [--password PASSWORD]
                 [--role ROLE]
@@ -56,11 +55,11 @@ Optional arguments:
                         Name of account to switch to. Defaults to "staging".
   --profile PROFILE     Profile name that the AWS credentials should be saved
                         as. Defaults to the name of the account and role specified.
-`````
+```
 
 ### Windows Powershell
 
-`````
+```
 PS> .\aws-token.ps1 --help
 usage: index.js [-h] [-v] [--username USERNAME] [--password PASSWORD]
                 [--role ROLE]
@@ -79,10 +78,10 @@ Optional arguments:
                         Name of account to switch to. Defaults to "staging".
   --profile PROFILE     Profile name that the AWS credentials should be saved
                         as. Defaults to the name of the account and role specified.
-`````
+```
 ### Windows Batch File
 
-`````
+```
 C:\> aws-token.cmd --help
 usage: index.js [-h] [-v] [--username USERNAME] [--password PASSWORD]
                 [--role ROLE]
@@ -101,7 +100,7 @@ Optional arguments:
                         Name of account to switch to. Defaults to "staging".
   --profile PROFILE     Profile name that the AWS credentials should be saved
                         as. Defaults to the name of the account and role specified.
-`````
+```
 ![Image of Generator in Action](https://raw.githubusercontent.com/meetearnest/aws-sts/master/docs/aws-sts-token-generator.gif)
 
 ## How it Works
