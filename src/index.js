@@ -2,7 +2,7 @@
 
 /* eslint no-console: 0 */
 
-const ArgumentParser  = require('argparse').ArgumentParser;
+const ArgumentParser = require('argparse').ArgumentParser;
 const pkg = require('../package.json');
 const co = require('co');
 const coinquirer = require('coinquirer');
@@ -20,13 +20,15 @@ require('colors');
 const config = require('../cfg/config');
 const arnRegExp = /^arn:aws:iam::(\d+):([^\/]+)\/(.+)$/;
 
-co(function *() {
+
+co(function* () {
   console.log('Earnest AWS Token Generator\n'.green.bold);
   let provider = require(`./providers/${config.provider}`);
 
   let args = parseArgs(provider.name);
-  let samlAssertion = yield provider.login(config.accounts[args.account], args.username, args.password);
-  //let samlAssertion = yield provider.login(config.idpEntryUrl, args.username, args.password);
+  let samlAssertion = yield provider.login(config.accounts[args.account], args.username,
+    args.password);
+
   let role = yield selectRole(samlAssertion, args.role);
   let token = yield getToken(samlAssertion, args.account, role);
   let profileName = buildProfileName(role, args.account, args.profile);
@@ -38,20 +40,20 @@ co(function *() {
     ' profile.', config.awsConfigPath, profileName);
   console.log('Note that it will expire at ' + '%s'.yellow.bold + '.',
     token.Credentials.Expiration);
-  console.log('After this time, you may safely rerun this script to refresh your access key pair.');
+  console.log('After this time, you may safely rerun this script to refresh your access key ' +
+    'pair.');
   console.log('To use this credential, call the AWS CLI with the --profile option (e.g. ' +
     'aws --profile %s ec2 describe-instances'.italic.grey + ').', profileName);
   console.log('----------------------------------------------------------------\n\n');
-})
-  .catch(function (err) {
-    if (err instanceof Error) {
-      console.error(err.message);
-      console.error(err.stack);
-    } else {
-      console.error(err);
-    }
-    process.exit(-1);
-  });
+}).catch(function (err) {
+  if (err instanceof Error) {
+    console.error(err.message);
+    console.error(err.stack);
+  } else {
+    console.error(err);
+  }
+  process.exit(-1);
+});
 
 
 function parseArgs(providerName) {
@@ -76,16 +78,18 @@ function parseArgs(providerName) {
   });
   parser.addArgument(['--profile'], {
     help: 'Profile name that the AWS credentials should be saved as. ' +
-    'Defaults to the name of the account specified.'
+      'Defaults to the name of the account specified.'
   });
   return parser.parseArgs();
 }
 
-function *selectRole(samlAssertion, roleName) {
+function* selectRole(samlAssertion, roleName) {
   let buf = new Buffer(samlAssertion, 'base64');
   let saml = yield thunkify(xml2js.parseString)(
-    buf,
-    {tagNameProcessors: [xml2js.processors.stripPrefix], xmlns: true});
+    buf, {
+      tagNameProcessors: [xml2js.processors.stripPrefix],
+      xmlns: true
+    });
 
   // Extract SAML roles
   let roles;
@@ -164,48 +168,52 @@ function parseRoleAttributeValue(attributeValue) {
   };
 }
 
-function *getToken(samlAssertion, account, role) {
+function* getToken(samlAssertion, account, role) {
   let spinner = new clui.Spinner('Getting token...');
 
   return new Promise(function (resolve, reject) {
     spinner.start();
-    let sts = new AWS.STS({region: config.region});
+    let sts = new AWS.STS({
+      region: config.region
+    });
     sts.assumeRoleWithSAML({
       PrincipalArn: role.principalArn,
       RoleArn: role.roleArn,
       SAMLAssertion: samlAssertion
     }, function (err, token) {
-      if (err) { return reject(err); }
+      if (err) {
+        return reject(err);
+      }
 
       spinner.stop();
-	  return resolve(token);
-      //if (account === config.defaultAccount) {
+      return resolve(token);
+      // if (account === config.defaultAccount) {
       //  spinner.stop();
       //  return resolve(token);
-      //}
-
-      //sts.config.credentials = new AWS.Credentials(
+      // }
+      //
+      // sts.config.credentials = new AWS.Credentials(
       //  token.Credentials.AccessKeyId,
       //  token.Credentials.SecretAccessKey,
       //  token.Credentials.SessionToken);
-      //let roleArn = role.roleArn.replace(/::(\d+)/, `::${config.accounts[account]}`);
-
-      //// Need to switch roles to the other account
-      //const splitArn = token.AssumedRoleUser.Arn.split('/');
-      //sts.assumeRole({
+      // let roleArn = role.roleArn.replace(/::(\d+)/, `::${config.accounts[account]}`);
+      //
+      // // Need to switch roles to the other account
+      // const splitArn = token.AssumedRoleUser.Arn.split('/');
+      // sts.assumeRole({
       //  RoleArn: roleArn,
       //  RoleSessionName: splitArn[splitArn.length - 1]
-      //}, function (err, assumedToken) {
+      // }, function (err, assumedToken) {
       //  if (err) { return reject(err); }
-
+      //
       //  spinner.stop();
       //  return resolve(assumedToken);
-      //});
+      // });
     });
   });
 }
 
-function *writeTokenToConfig(token, label) {
+function* writeTokenToConfig(token, label) {
   let configFile = path.join(os.homedir(), config.awsConfigPath);
   yield thunkify(mkdirp)(path.dirname(configFile));
 
@@ -232,7 +240,9 @@ function *writeTokenToConfig(token, label) {
 }
 
 function buildProfileName(role, account, overrideName) {
-  if (overrideName) { return overrideName; }
+  if (overrideName) {
+    return overrideName;
+  }
 
   return `${account}-${role.name}`;
 }
