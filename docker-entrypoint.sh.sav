@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+xvfb-run --server-args="-screen 0 1280x2000x24" node src/index.js "$@"
+ #Xvfb -ac -screen scrn 1280x2000x24 :9.0 &
+ # 303  export DISPLAY=:9.0

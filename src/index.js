@@ -33,6 +33,8 @@ co(function* () {
   let token = yield getToken(samlAssertion, args.account, role);
   let profileName = buildProfileName(role, args.account, args.profile);
   yield writeTokenToConfig(token, profileName);
+  if (args.setenv) yield writeTokenEnvVars(token)
+
 
   console.log('\n\n----------------------------------------------------------------');
   console.log('Your new access key pair has been stored in the AWS configuration file ' +
@@ -79,6 +81,11 @@ function parseArgs(providerName) {
   parser.addArgument(['--profile'], {
     help: 'Profile name that the AWS credentials should be saved as. ' +
       'Defaults to the name of the account specified.'
+  });
+  parser.addArgument(['--setenv'], {
+    help: 'if set, sets AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and AWS_SESSION_TOKEN ' +
+		'environment variables',
+	action: 'storeTrue'
   });
   return parser.parseArgs();
 }
@@ -246,3 +253,14 @@ function buildProfileName(role, account, overrideName) {
 
   return `${account}-${role.name}`;
 }
+
+
+function* writeTokenEnvVars(token) {
+	console.log("setting environment variables...");
+	console.log("export AWS_ACCESS_KEY_ID=" + token.Credentials.AccessKeyId);
+	console.log("export AWS_SECRET_ACCESS_KEY=" + token.Credentials.SecretAccessKey);
+	console.log("export AWS_SESSION_TOKEN=" + token.Credentials.SessionToken);
+
+
+}
+
