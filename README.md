@@ -27,80 +27,54 @@ accounts:         Hash of name/idPEntryUrl pairs for accounts which can be switc
 
 ## Installation
 
-To install:
+To install on windows or osx:
 1. Clone this Repo
-2. install the dependencies: `npm instal`
+2. install the dependencies: `npm install`
 3. run the [`aws-token.sh`](./aws-token.sh) script at the root of your repository. use the --account switch to selecgt an account to log in to.
 ` ./aws-token.sh --account account-name `
 
-## Usage
+For linux (optionally, osx) use the docker image instead.
 
-### Bash (MacOs/Linux)
+## Usage
+The syntax for all operating systems is correct, however the script to launch varies by operating system.
+* Windows powershell:  aws-token.ps1
+* Windows cmd.exe:  aws-token.cmd
+* OSX: aws-token.sh
+* Docker: ws-tocken-docker.sh
+
+*Important note:  If you specifiy a run command that has a space in the path name, you MUST escape the space.  For example, use the caret (^) to escape a space in a windows path:*
+```
+aws-token.cmd --account wowinc-dev --run_command "c:\Program^ Files\RazorSQL\RazorSQL.exe
+```
+
+### Parameters
 ```
 $> ./aws-token.sh --help
 usage: index.js [-h] [-v] [--username USERNAME] [--password PASSWORD]
                 [--role ROLE]
-                [--account {staging,development}]
-                [--profile PROFILE]
+                [--account {wowinc-master,wowinc-core,wowinc-logging,wowinc-dev,wowinc-dev-nta,wowinc,wowinc-dev-otr,wowinc-prod-otr,wowinc-dev-docsis,wowinc-prod-docsis,wowinc-dev-cfs,wowinc-dev-pq}]
+                [--profile PROFILE] [--run_command RUN_COMMAND]
+                
 
-AWS STS Token Generator
-
-Optional arguments:
-  -h, --help            Show this help message and exit.
-  -v, --version         Show program's version number and exit.
-  --username USERNAME   Okta username (ex. user@meetearnest.com)
-  --password PASSWORD   Okta password
-  --role ROLE           Name of SAML role to assume
-  --account {staging,development}
-                        Name of account to switch to. Defaults to "staging".
-  --profile PROFILE     Profile name that the AWS credentials should be saved
-                        as. Defaults to the name of the account and role specified.
-```
-
-### Windows Powershell
-
-```
-PS> .\aws-token.ps1 --help
-usage: index.js [-h] [-v] [--username USERNAME] [--password PASSWORD]
-                [--role ROLE]
-                [--account {staging,development}]
-                [--profile PROFILE]
-
-AWS STS Token Generator
+Generation of AWS STS tokens via SAML authentication.
 
 Optional arguments:
   -h, --help            Show this help message and exit.
   -v, --version         Show program's version number and exit.
-  --username USERNAME   Okta username (ex. user@meetearnest.com)
+  --username USERNAME   Okta username (ex. user@domain.com)
   --password PASSWORD   Okta password
   --role ROLE           Name of SAML role to assume
-  --account {staging,development}
-                        Name of account to switch to. Defaults to "staging".
-  --profile PROFILE     Profile name that the AWS credentials should be saved
-                        as. Defaults to the name of the account and role specified.
+  --account {wowinc-master,wowinc-core,wowinc-logging,wowinc-dev,wowinc-dev-nta,wowinc,wowinc-dev-otr,wowinc-prod-otr,wowinc-dev-docsis,wowinc-prod-docsis,wowinc-dev-cfs,wowinc-dev-pq}
+                        Name of account to switch to. Defaults to 
+                        "wowinc-dev".
+  --profile PROFILE     Profile name that the AWS credentials should be saved 
+                        as. Defaults to the name of the account specified.
+  --run_command RUN_COMMAND
+                        The path to the command to run after logging in. Sets 
+                        AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and 
+                        AWS_SESSION_TOKEN before running the command
 ```
-### Windows Batch File
 
-```
-C:\> aws-token.cmd --help
-usage: index.js [-h] [-v] [--username USERNAME] [--password PASSWORD]
-                [--role ROLE]
-                [--account {staging,development}]
-                [--profile PROFILE]
-
-AWS STS Token Generator
-
-Optional arguments:
-  -h, --help            Show this help message and exit.
-  -v, --version         Show program's version number and exit.
-  --username USERNAME   Okta username (ex. user@meetearnest.com)
-  --password PASSWORD   Okta password
-  --role ROLE           Name of SAML role to assume
-  --account {staging,development}
-                        Name of account to switch to. Defaults to "staging".
-  --profile PROFILE     Profile name that the AWS credentials should be saved
-                        as. Defaults to the name of the account and role specified.
-```
 ![Image of Generator in Action](https://raw.githubusercontent.com/meetearnest/aws-sts/master/docs/aws-sts-token-generator.gif)
 
 ## How it Works
