@@ -273,7 +273,7 @@ function* setVarsAndRun(token, command) {
 	//}).unref();
 
  	var exec = require('child_process').exec;
- 	exec('"' + command + '"', function(error, stdout, stderr) {
+ 	exec(command, function(error, stdout, stderr) {
 	   console.log(stdout);
 	   console.log(stderr.red.bold);
  	  // command output is in stdout
