@@ -1,7 +1,7 @@
 {
-  "name": "set_env_for_profile",
+  "name": "run_as_profile",
   "version": "1.0.1",
-  "description": "set env vars t o the profile settings",
+  "description": "set AWS Enivornment Variables to the profile settings, and then run a command in that context",
   "main": "src/index.js",
   "engines": {
     "node": ">= 4.0.0"
