@@ -33,7 +33,7 @@ co(function* () {
   let token = yield getToken(samlAssertion, args.account, role);
   let profileName = buildProfileName(role, args.account, args.profile);
   yield writeTokenToConfig(token, profileName);
-  if (args.setenv) yield writeTokenEnvVars(token)
+  if (args.run_command) yield setVarsAndRun(token, args.run_command);
 
 
   console.log('\n\n----------------------------------------------------------------');
@@ -82,10 +82,10 @@ function parseArgs(providerName) {
     help: 'Profile name that the AWS credentials should be saved as. ' +
       'Defaults to the name of the account specified.'
   });
-  parser.addArgument(['--setenv'], {
-    help: 'if set, sets AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and AWS_SESSION_TOKEN ' +
-		'environment variables',
-	action: 'storeTrue'
+  parser.addArgument(['--run_command'], {
+    help: 'The path to the command to run after logging in. Sets AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, ' +
+		'and AWS_SESSION_TOKEN before running the command' ,
+	//required: true,
   });
   return parser.parseArgs();
 }
@@ -255,11 +255,27 @@ function buildProfileName(role, account, overrideName) {
 }
 
 
-function* writeTokenEnvVars(token) {
+function* setVarsAndRun(token, command) {
 	console.log("setting environment variables...");
-	console.log("export AWS_ACCESS_KEY_ID=" + token.Credentials.AccessKeyId);
-	console.log("export AWS_SECRET_ACCESS_KEY=" + token.Credentials.SecretAccessKey);
-	console.log("export AWS_SESSION_TOKEN=" + token.Credentials.SessionToken);
+	//console.log("export AWS_ACCESS_KEY_ID=" + token.Credentials.AccessKeyId);
+	//console.log("export AWS_SECRET_ACCESS_KEY=" + token.Credentials.SecretAccessKey);
+	//console.log("export AWS_SESSION_TOKEN=" + token.Credentials.SessionToken);
+
+ 	if(token.Credentials.AccessKeyId) process.env.AWS_ACCESS_KEY_ID = token.Credentials.AccessKeyId;
+ 	if(token.Credentials.SecretAccessKey) process.env.AWS_SECRET_ACCESS_KEY = token.Credentials.SecretAccessKey;
+	if(token.Credentials.SessionToken) process.env.AWS_SESSION_TOKEN = token.Credentials.SessionToken;
+
+	console.log("running command: " + command);
+	//var spawn = require('child_process').spawn;
+	//spawn(command, [""], {
+	//    stdio: 'ignore', // piping all stdio to /dev/null
+	//    detached: true
+	//}).unref();
+
+ 	var exec = require('child_process').exec;
+ 	exec(command, function(error, stdout, stderr) {
+ 	  // command output is in stdout
+ 	});
 
 
 }
