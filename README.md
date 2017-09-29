@@ -30,7 +30,7 @@ accounts:         Hash of name/idPEntryUrl pairs for accounts which can be switc
 To install on windows or osx:
 1. Clone this Repo
 2. install the dependencies: `npm install`
-3. run the [`aws-token.sh`](./aws-token.sh) script at the root of your repository. use the --account switch to selecgt an account to log in to.
+3. run the [`aws-token.sh`](./aws-token.sh) script at the root of your repository. use the --account switch to select an account to log in to.
 ` ./aws-token.sh --account account-name `
 
 For linux (optionally, osx) use the docker image instead.
@@ -42,7 +42,10 @@ The syntax for all operating systems is correct, however the script to launch va
 * OSX: aws-token.sh
 * Docker: ws-tocken-docker.sh
 
-*Important note:  If you specifiy a run command that has a space in the path name, you MUST escape the space.  For example, use the caret (^) to escape a space in a windows path:*
+*Important note:  the --run_command will NOT work when run via docker, as the command will be run in the context of the container.
+
+*Another Important note:  If you specifiy a run command that has a space in the path name, you MUST escape the space.  For example, use the caret (^) to escape a space in a windows path:*
+
 ```
 aws-token.cmd --account wowinc-dev --run_command "c:\Program^ Files\RazorSQL\RazorSQL.exe
 ```
